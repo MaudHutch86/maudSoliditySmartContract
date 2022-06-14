@@ -30,7 +30,7 @@ contract voting  is Ownable {
       VotingSessionEnded,
       VotesTallied}
 
-      WorkflowStatus  status;
+     WorkflowStatus  status;
 
    
    uint winningProposalId;
@@ -38,7 +38,7 @@ contract voting  is Ownable {
    Proposal[] public proposals; 
    mapping(address => bool) hasVoted;
 
-
+ 
 
 // events
 
@@ -53,10 +53,9 @@ contract voting  is Ownable {
       
       
    
-   function registeringVoter(address voterAddress) onlyOwner public  {
+   function registeringVoter(address  voterAddress) onlyOwner public  {
       require(!voters[msg.sender].isRegistered);
       voters[msg.sender].isRegistered = true;
-      status = WorkflowStatus.RegisteringVoters;
       emit VoterRegistered(voterAddress); 
    
    }
@@ -65,8 +64,9 @@ contract voting  is Ownable {
      
 
    function startingRegistration() onlyOwner public {
+       WorkflowStatus previousStatus = status;
        status = WorkflowStatus.ProposalsRegistrationStarted;
-       
+       emit WorkflowStatusChange( previousStatus, status);
    }
    
 
@@ -87,7 +87,7 @@ contract voting  is Ownable {
       
       
    }
-
+   // test
    function getProposalId (address voter) public returns (uint){
       uint proposalId = voters[voter].votedProposalId;
       emit ProposalRegistered(proposalId);
@@ -99,14 +99,18 @@ contract voting  is Ownable {
    
    
    function EndingRegistration() onlyOwner public {
-       status = WorkflowStatus.ProposalsRegistrationEnded;
-
+      WorkflowStatus previousStatus = status;
+      status = WorkflowStatus.ProposalsRegistrationEnded;
+      emit WorkflowStatusChange( previousStatus, status);
    }
 // 4: the electors on the whilists are authorised (require) to vote until the vote is active
   
    function startVoting() onlyOwner public {
+      
       require(status == WorkflowStatus.ProposalsRegistrationEnded);
+      WorkflowStatus previousStatus = status;
       status = WorkflowStatus.VotingSessionStarted;
+      emit WorkflowStatusChange( previousStatus, status);
    }
   
 
@@ -126,7 +130,9 @@ contract voting  is Ownable {
 
    function stopVoting() onlyOwner public {
       require(status == WorkflowStatus.VotingSessionStarted);
+      WorkflowStatus previousStatus = status;
       status = WorkflowStatus.VotingSessionEnded;
+      emit WorkflowStatusChange( previousStatus, status);
       
    }
 
@@ -156,6 +162,7 @@ contract voting  is Ownable {
  
 
    // 7:imposé Votre smart contract doit définir un uint winningProposalId qui représente l’id du gagnant ou une fonction getWinner qui retourne le gagnant.
+    // function get winner i s the highest sum of proposal if there is an egality give two first values 
     // 8: everybody can verify the details of the winning proposal
      
    function getwinner() public  view returns (uint winner_) {
