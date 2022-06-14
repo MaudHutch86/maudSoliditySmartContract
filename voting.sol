@@ -151,7 +151,7 @@ contract voting  is Ownable {
       
         } else if (proposals[p].voteCount == winningVoteCount) {
             status = WorkflowStatus.VotesTallied;
-        console.log("there is a draw!", proposals[p].voteCount + winningVoteCount );
+        console.log("there is a draw!");
       } else{
        console.log("something went wrong there are no proposals given");
       }
